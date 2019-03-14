@@ -86,7 +86,6 @@ let ``Figure is symmetric around the horizontal axis`` (letter: char) =
         |> List.rev
     topRows = bottomRows
 
-
 [<DiamondProperty>]
 let ``Diamond is as wide as its height`` (letter: char) =
     let actual = Diamond.make letter
@@ -94,3 +93,18 @@ let ``Diamond is as wide as its height`` (letter: char) =
     let rows = split actual
     let expected = rows.Length
     rows |> Array.forall(fun x -> x.Length = expected)
+
+[<DiamondProperty>]
+let ``All rows except top and bottom have two identical letters`` (letter: char) =
+    let actual = Diamond.make letter
+    
+    let isTwoIdenticalLetters x = 
+        let hasIdenticalLetters = x |> Seq.distinct |> Seq.length = 1
+        let hasTwoLetters = x |> Seq.length = 2
+        hasIdenticalLetters && hasTwoLetters
+    
+    let rows = split actual
+    rows
+    |> Array.filter(fun x -> not(x.Contains("A")))
+    |> Array.map (fun x -> x.Replace(" ", String.Empty))
+    |> Array.forall isTwoIdenticalLetters
